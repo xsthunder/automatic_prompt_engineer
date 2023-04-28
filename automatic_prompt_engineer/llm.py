@@ -18,10 +18,15 @@ gpt_costs_per_thousand = {
 def model_from_config(config, disable_tqdm=True):
     """Returns a model based on the config."""
     model_type = config["name"]
+    import os
+    needs_confirmation = os.getenv('needs_confirmation', "False")
+    assert needs_confirmation == "True" or needs_confirmation == "False"
+    needs_confirmation = bool(needs_confirmation)
+    print("needs_confirmation", needs_confirmation)
     if model_type == "GPT_forward":
-        return GPT_Forward(config, disable_tqdm=disable_tqdm)
+        return GPT_Forward(config, disable_tqdm=disable_tqdm, needs_confirmation=needs_confirmation)
     elif model_type == "GPT_insert":
-        return GPT_Insert(config, disable_tqdm=disable_tqdm)
+        return GPT_Insert(config, disable_tqdm=disable_tqdm, needs_confirmation=needs_confirmation)
     raise ValueError(f"Unknown model type: {model_type}")
 
 
