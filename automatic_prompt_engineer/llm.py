@@ -341,7 +341,10 @@ def gpt_get_estimated_cost(config, prompt, max_tokens):
     n_prompt_tokens = len(prompt) // 4
     # Get the number of tokens in the generated text
     total_tokens = n_prompt_tokens + max_tokens
-    engine = config['gpt_config']['model'].split('-')[1]
+    if '-' in config['gpt_config']['model']:
+        engine = config['gpt_config']['model'].split('-')[1]
+    else:
+        engine = config['gpt_config']['model']
     costs_per_thousand = gpt_costs_per_thousand
     if engine not in costs_per_thousand:
         # Try as if it is a fine-tuned model
