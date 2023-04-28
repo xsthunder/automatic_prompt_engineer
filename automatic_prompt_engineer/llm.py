@@ -19,8 +19,8 @@ def model_from_config(config, disable_tqdm=True):
     """Returns a model based on the config."""
     model_type = config["name"]
     import os
-    needs_confirmation = os.getenv('needs_confirmation', "False")
-    assert needs_confirmation == "True" or needs_confirmation == "False"
+    needs_confirmation = os.getenv('needs_confirmation', "")
+    assert needs_confirmation == "True" or needs_confirmation == ""
     needs_confirmation = bool(needs_confirmation)
     print("needs_confirmation", needs_confirmation)
     if model_type == "GPT_forward":
