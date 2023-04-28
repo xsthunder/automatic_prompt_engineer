@@ -19,7 +19,7 @@ def model_from_config(config, disable_tqdm=True):
     """Returns a model based on the config."""
     model_type = config["name"]
     import os
-    needs_confirmation = os.getenv('needs_confirmation', "False")
+    needs_confirmation = os.getenv('needs_confirmation', None)
     assert needs_confirmation == "True" or needs_confirmation == "False"
     needs_confirmation = needs_confirmation == "True" # bool("False") 是True
     print("needs_confirmation", needs_confirmation)
