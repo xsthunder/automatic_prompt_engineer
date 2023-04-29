@@ -82,7 +82,30 @@ def fine_tuned_gpt_evaluator(prompts, eval_template, eval_data, demos_template, 
 
     # Instantiate the LLM
     model = llm.model_from_config(config['model'], disable_tqdm=False)
+    # pf("queries", queries) # 太多了
+    import os
+    xs_run_log_path = os.getenv('xs_run_log_path', None)
+    assert not (xs_run_log_path is None)
+    print("xs_run_log_path", xs_run_log_path)
+
+    from os import path
+    import pickle
+    filename=f"{xs_run_log_path}/fine_tuned_gpt_evaluator.queries.pkl"
+    print(filename)
+    assert not path.isfile(filename), filename
+    with open(filename, "wb") as f:
+        pickle.dump(queries, f)
+        pickle.dump(inputs, f)
+    
     model_outputs = model.generate_text(queries, n=1)
+
+    from os import path
+    import pickle
+    filename=f"{xs_run_log_path}/fine_tuned_gpt_evaluator.model_outputs.pkl"
+    print(filename)
+    assert not path.isfile(filename), filename
+    with open(filename, "wb") as f:
+        pickle.dump(model_outputs, f)
 
     truthful, informative = gpt_eval(inputs, model_outputs)
 
