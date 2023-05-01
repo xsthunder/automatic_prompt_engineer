@@ -3,7 +3,7 @@ import numpy as np
 from automatic_prompt_engineer import llm, data, evaluate
 
 model_names = {
-    "judge": "curie:ft-uoft-ml-group-2022-09-26-01-07-30",
+    "judge": "curie:ft-personal-2023-04-30-08-57-05",
     "info": "curie:ft-uoft-ml-group-2022-09-27-13-35-15"
 }
 
