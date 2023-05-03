@@ -103,49 +103,32 @@ def simple_estimate_cost(dataset,
 
 
 
-def pf(*args):
+
+def pf(*args, file="external_file"):
   import os
   xs_run_log_path = os.getenv('xs_run_log_path', None)
   assert not (xs_run_log_path is None)
   print("xs_run_log_path", xs_run_log_path)
-  logFilePath = f"{xs_run_log_path}/logging.info.log"
-  # logFilePath = "my.log"
-
+  
   CONSOLE_LOGLEVEL = os.environ.get('CONSOLE_LOGLEVEL', 'INFO').upper()
-  FILE_LOGLEVEL = os.environ.get('FILE_LOGLEVEL', 'DEBUG').upper()
 
-  logging.basicConfig(level=logging.DEBUG)
-
-  import logging
-  import logging.handlers
-  logger = logging.getLogger("mylog")
-  formatter = logging.Formatter(
-      '%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s') # 打印行数  （ipynb无效）
-  logger.setLevel(logging.DEBUG)
-
-  stream_handler = logging.StreamHandler()
-  stream_handler.setLevel(CONSOLE_LOGLEVEL)
-  stream_handler.setFormatter(formatter)
-
-
-  file_handler = logging.FileHandler(
-      filename=logFilePath) # append 模式添加
-  # file_handler = logging.handlers.TimedRotatingFileHandler(
-      # filename=logFilePath, when='midnight', backupCount=30) # append 模式添加
-  file_handler.setFormatter(formatter)
-  file_handler.setLevel(FILE_LOGLEVEL)
-
-  logger.addHandler(file_handler)
-  logger.addHandler(stream_handler)
-  log = logger
+  external_file=open(f"{xs_run_log_path}/print2file.log", "a", encoding="utf-8")
+  from functools import partial
+  if file == "external_file": p=partial(print, file=external_file)
+  elif file == "console": p = print
+  else :raise
 
   ks = args[::2]
   vs = args[1::2]
   assert len(ks) == len(vs)
   for k, v in zip(ks, vs):
-    log.debug(f"====== {k}")
-    log.debug(v)
-    log.debug(f"====== {k} ======")
+    p(f"====== {k}")
+    p(v)
+    p(f"====== {k} ======")
+  external_file.close()
+  
+  if CONSOLE_LOGLEVEL == "DEBUG" and file == "external_file":
+    pf(*args, file="console")
     
 
 def find_prompts(eval_template,
