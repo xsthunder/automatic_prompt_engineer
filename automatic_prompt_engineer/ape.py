@@ -117,13 +117,21 @@ def pf(*args):
   log = getLogger(__name__)
   log.setLevel(logging.DEBUG)
 
+  external_file=open(f"{xs_run_log_path}/print2file.log", "a", encoding="utf-8")
+  from functools import partial
+  pf=partial(print, file=external_file)
+
   ks = args[::2]
   vs = args[1::2]
   assert len(ks) == len(vs)
   for k, v in zip(ks, vs):
     log.debug(f"====== {k}")
+    pf(f"====== {k}")
     log.debug(v)
+    pf(v)
     log.debug(f"====== {k} ======")
+    pf(f"====== {k} ======")
+  external_file.close()
 
     
 
@@ -184,62 +192,6 @@ def find_prompts(eval_template,
     pf( "eval_template", eval_template.template, "eval_data", eval_data, "demos_template", demos_template.template, "few_shot_data", few_shot_data,
                                    "conf['evaluation']['method']", conf['evaluation']['method'], "conf['evaluation']", conf['evaluation'] )
     # assert False
-    res = evaluate.evalute_prompts(prompts, eval_template, eval_data, demos_template, few_shot_data,
-                                   conf['evaluation']['method'], conf['evaluation'])
-
-    print('Finished evaluating.')
-
-    demo_fn = evaluate.demo_function(eval_template, conf['demo'])
-
-    return res, demo_fn
-
-def find_prompts(eval_template,
-                 demos_template,
-                 prompt_gen_data,
-                 eval_data,
-                 conf,
-                 base_conf='configs/default.yaml',
-                 few_shot_data=None,
-                 prompt_gen_template=None):
-    """
-    Function to generate prompts using APE.
-    Parameters:
-        eval_template: The template for the evaluation queries.
-        demos_template: The template for the demos.
-        prompt_gen_data: The data to use for prompt generation.
-        eval_data: The data to use for evaluation.
-        conf: The configuration dictionary.
-        few_shot_data: The data to use for demonstrations during eval (not implemented yet).
-        eval_method: The evaluation method to use. ('likelihood')
-        prompt_gen_template: The template to use for prompt generation.
-        verbosity: The verbosity level.
-    Returns:
-        An evaluation result. Also returns a function to evaluate the prompts with new inputs.
-    """
-
-    conf = config.update_config(conf, base_conf)
-
-    # Generate prompts
-    eval_template = template.EvalTemplate(eval_template)
-    demos_template = template.DemosTemplate(demos_template)
-    if prompt_gen_template is None:
-        prompt_gen_template = eval_template.convert_to_generation_template()
-    else:
-        prompt_gen_template = template.GenerationTemplate(prompt_gen_template)
-
-    if few_shot_data is None:
-        few_shot_data = prompt_gen_data
-
-    print('Generating prompts...')
-    prompts = generate.generate_prompts(
-        prompt_gen_template, demos_template, prompt_gen_data, conf['generation'])
-
-    print('Model returned {} prompts. Deduplicating...'.format(len(prompts)))
-    prompts = list(set(prompts))
-    print('Deduplicated to {} prompts.'.format(len(prompts)))
-
-    print('Evaluating prompts...')
-
     res = evaluate.evalute_prompts(prompts, eval_template, eval_data, demos_template, few_shot_data,
                                    conf['evaluation']['method'], conf['evaluation'])
 
